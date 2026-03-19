@@ -11,8 +11,12 @@
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+  }
   body {
     @apply bg-white text-primary font-inter;
+    overflow-x: hidden;
   }
 }
 
@@ -31,8 +35,47 @@
   100% { transform: translateX(-50%); }
 }
 
+/* Logo carousel: slower scroll for smoother feel */
 .animate-scroll {
-  animation: scroll 30s linear infinite;
+  animation: scroll 50s linear infinite;
+}
+
+/* Logo carousel: gradient fade on left/right edges */
+.logo-carousel-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+}
+
+/* Global button hover: scale 1.05, smooth transition */
+.btn-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+.btn-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Scroll progress bar */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4F46E5, #7C3AED);
+  z-index: 9999;
+  transform-origin: left;
+  transition: transform 0.1s ease-out;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -93,5 +136,11 @@
 .ticks {
   position: relative;
   width: 100%;
+}
+
+/* Responsive: prevent text overflow, ensure proper wrapping */
+.break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 

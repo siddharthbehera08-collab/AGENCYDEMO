@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   Menu,
@@ -18,11 +18,51 @@ import {
   Facebook,
 } from 'lucide-react';
 
-export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+/* Scroll progress bar - premium feature, lightweight */
+export function ScrollProgress() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      setScrollY(height > 0 ? (winScroll / height) * 100 : 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b-[0.5px] border-border transition-all">
+    <div
+      className="scroll-progress-bar"
+      style={{ width: `${scrollY}%` }}
+      role="progressbar"
+      aria-valuenow={Math.round(scrollY)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    />
+  );
+}
+
+export function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`fixed w-full z-50 backdrop-blur-md border-b transition-all duration-300 ${
+        scrolled
+          ? 'bg-white/95 border-border shadow-sm'
+          : 'bg-white/80 border-b-[0.5px] border-border'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex-shrink-0 flex items-center">
@@ -32,25 +72,25 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="font-medium text-primary hover:text-accent transition-colors">
+            <a href="#" className="font-medium text-primary hover:text-accent transition-colors duration-200">
               Home
             </a>
-            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors">
+            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors duration-200">
               Works
             </a>
-            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors">
+            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors duration-200">
               About
             </a>
-            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors">
+            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors duration-200">
               Pricing
             </a>
-            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors">
+            <a href="#" className="font-medium text-secondary hover:text-accent transition-colors duration-200">
               Blog
             </a>
           </div>
 
           <div className="hidden md:flex items-center">
-            <button className="bg-primary text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors font-medium">
+            <button className="btn-hover bg-primary text-white px-6 py-3 rounded-full hover:bg-gray-800 font-medium shadow-md">
               Contact Us
             </button>
           </div>
@@ -70,40 +110,40 @@ export function Navbar() {
         <div className="md:hidden absolute top-20 left-0 w-full h-screen bg-white flex flex-col items-center pt-20 space-y-8 z-40 border-t border-border">
           <a
             href="#"
-            className="text-2xl font-medium text-primary hover:text-accent transition-colors"
+            className="text-2xl font-medium text-primary hover:text-accent transition-colors duration-200"
             onClick={() => setIsOpen(false)}
           >
             Home
           </a>
           <a
             href="#"
-            className="text-2xl font-medium text-secondary hover:text-accent transition-colors"
+            className="text-2xl font-medium text-secondary hover:text-accent transition-colors duration-200"
             onClick={() => setIsOpen(false)}
           >
             Works
           </a>
           <a
             href="#"
-            className="text-2xl font-medium text-secondary hover:text-accent transition-colors"
+            className="text-2xl font-medium text-secondary hover:text-accent transition-colors duration-200"
             onClick={() => setIsOpen(false)}
           >
             About
           </a>
           <a
             href="#"
-            className="text-2xl font-medium text-secondary hover:text-accent transition-colors"
+            className="text-2xl font-medium text-secondary hover:text-accent transition-colors duration-200"
             onClick={() => setIsOpen(false)}
           >
             Pricing
           </a>
           <a
             href="#"
-            className="text-2xl font-medium text-secondary hover:text-accent transition-colors"
+            className="text-2xl font-medium text-secondary hover:text-accent transition-colors duration-200"
             onClick={() => setIsOpen(false)}
           >
             Blog
           </a>
-          <button className="bg-primary text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-colors text-xl font-medium mt-8 w-11/12">
+          <button className="btn-hover bg-primary text-white px-8 py-4 rounded-full hover:bg-gray-800 text-xl font-medium mt-8 w-11/12 shadow-md">
             Contact Us
           </button>
         </div>
@@ -168,7 +208,7 @@ export function Hero() {
 
         <motion.h1
           variants={itemVariants}
-          className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-primary leading-[1.1] mb-6"
+          className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight text-primary leading-[1.1] mb-6"
         >
           {prefersReducedMotion ? (
             <>
@@ -211,7 +251,7 @@ export function Hero() {
 
         <motion.p
           variants={itemVariants}
-          className="text-lg md:text-xl text-secondary mb-10 max-w-2xl mx-auto leading-relaxed"
+          className="text-lg md:text-xl text-secondary/80 mb-10 max-w-2xl mx-auto leading-relaxed"
         >
           We help ambitious brands and startups create high-converting websites and scalable design systems that
           stand out.
@@ -219,16 +259,16 @@ export function Hero() {
 
         <motion.div
           variants={itemVariants}
-          className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
         >
-          <button className="w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-medium hover:bg-gray-800 transition-colors shadow-lg">
-            Get Started Now
+          <button className="btn-hover w-full sm:w-auto px-8 py-4 bg-primary text-white rounded-full font-medium hover:bg-gray-800 shadow-lg">
+            Get Started
           </button>
-          <button className="w-full sm:w-auto px-8 py-4 bg-surface text-primary rounded-full font-medium hover:bg-gray-100 transition-colors border border-border flex items-center justify-center space-x-2">
+          <button className="btn-hover w-full sm:w-auto px-8 py-4 bg-surface text-primary rounded-full font-medium hover:bg-gray-100 border border-border flex items-center justify-center space-x-2">
             <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
               <div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-primary border-b-4 border-b-transparent ml-1" />
             </span>
-            <span>Watch Showreel</span>
+            <span>View Demo</span>
           </button>
         </motion.div>
       </motion.div>
@@ -255,7 +295,7 @@ export function BrandLogos() {
   return (
     <section className="bg-surface py-20 px-4 sm:px-6 lg:px-8 border-y border-border">
       <div className="max-w-7xl mx-auto text-center">
-        <p className="text-sm font-medium text-secondary mb-10 uppercase tracking-widest">
+        <p className="text-sm font-medium text-secondary/90 mb-10 uppercase tracking-widest">
           Trusted by leading brands
         </p>
 
@@ -300,7 +340,7 @@ export function LogoCarousel() {
         </h2>
       </div>
 
-      <div className="w-full overflow-hidden hover:overflow-x-auto group cursor-grab active:cursor-grabbing no-scrollbar">
+      <div className="w-full overflow-hidden hover:overflow-x-auto group cursor-grab active:cursor-grabbing no-scrollbar logo-carousel-mask relative">
         <div className="flex items-center gap-16 pr-16 w-max animate-scroll group-hover:[animation-play-state:paused] will-change-transform px-8 pb-4">
           {allLogos.map((logo, index) => (
             <div
@@ -336,7 +376,7 @@ export function About() {
             <span className="text-secondary text-sm font-medium">About Us</span>
           </div>
 
-          <h2 className="text-4xl md:text-5xl font-semibold text-primary mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-primary mb-6 leading-tight break-words">
             We build digital experiences that matter
           </h2>
 
@@ -349,7 +389,7 @@ export function About() {
             fuel growth for modern brands.
           </p>
 
-          <button className="px-8 py-4 bg-transparent border border-border text-primary rounded-full font-medium hover:bg-surface hover:border-gray-300 transition-all flex items-center space-x-2">
+          <button className="btn-hover px-8 py-4 bg-transparent border border-border text-primary rounded-full font-medium hover:bg-surface hover:border-gray-300 flex items-center space-x-2">
             <span>Read More</span>
             <span className="text-xl">→</span>
           </button>
@@ -365,10 +405,10 @@ export function About() {
           {[...Array(9)].map((_, i) => (
             <div
               key={i}
-              className="aspect-square bg-surface rounded-2xl flex border border-border items-center justify-center hover:shadow-md transition-shadow cursor-pointer"
+              className="aspect-square bg-surface rounded-2xl flex border border-border items-center justify-center hover:shadow-lg hover:border-accent/30 transition-all duration-300 cursor-pointer"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center opacity-70">
-                <span className="text-xs font-bold text-gray-400">LOGO</span>
+                <span className="text-xs font-bold text-gray-400">Partner</span>
               </div>
             </div>
           ))}
@@ -420,9 +460,9 @@ export function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-white p-10 rounded-[32px] border border-border hover:border-accent hover:-translate-y-2 transition-all duration-300 shadow-sm hover:shadow-xl group cursor-pointer"
+              className="bg-white p-10 rounded-[32px] border border-border hover:border-accent hover:-translate-y-2 hover:shadow-xl transition-all duration-300 shadow-sm group cursor-pointer"
             >
-              <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center mb-8 group-hover:bg-indigo-50 transition-colors">
+              <div className="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center mb-8 group-hover:bg-indigo-50 group-hover:scale-110 transition-all duration-300">
                 {service.icon}
               </div>
               <h3 className="text-2xl font-semibold text-primary mb-4">{service.title}</h3>
@@ -439,7 +479,7 @@ export function Testimonial() {
   const testimonials = [
     {
       id: 1,
-      text: 'Working with Agency Hub completely transformed our online presence. Their design team captured our brand perfectly has doubled our conversion rate.',
+      text: 'Working with Agency Hub completely transformed our online presence. Their design team captured our brand perfectly and the new site has doubled our conversion rate.',
       name: 'Sarah Jenkins',
       role: 'CMO at TechFlow',
       avatar: 'SJ',
@@ -475,7 +515,7 @@ export function Testimonial() {
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <Quote className="w-20 h-20 text-accent/20 mx-auto mb-10" />
 
-        <div className="relative min-h-[250px] md:min-h-[200px] flex items-center justify-center">
+        <div className="relative min-h-[280px] md:min-h-[240px] flex items-center justify-center mb-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -485,49 +525,59 @@ export function Testimonial() {
               transition={{ duration: 0.5, ease: 'easeOut' }}
               className="absolute w-full"
             >
-              <h3 className="text-2xl md:text-4xl text-primary font-medium leading-relaxed mb-12">
-                "{testimonials[currentIndex].text}"
-              </h3>
+              <div className="relative flex items-center justify-center">
+                {/* Left navigation arrow aligned to card (pushed further out, lower opacity) */}
+                <button
+                  onClick={prevSlide}
+                  className="hidden sm:flex absolute left-[-4.5rem] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-border items-center justify-center text-primary bg-white/80 hover:bg-surface hover:text-accent transition-all hover:scale-105 shadow-sm opacity-50 hover:opacity-80"
+                >
+                  <ChevronLeft size={24} />
+                </button>
 
-              <div className="flex items-center justify-center space-x-4">
-                <div className="w-14 h-14 rounded-full bg-surface border border-border flex items-center justify-center text-secondary font-bold text-lg">
-                  {testimonials[currentIndex].avatar}
+                <div className="bg-white/60 backdrop-blur-sm border border-border rounded-3xl p-[37px] md:p-[53px] shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full">
+                  <h3 className="text-2xl md:text-4xl text-primary font-medium leading-relaxed mb-10 break-words px-2 sm:px-0">
+                    &ldquo;{testimonials[currentIndex].text}&rdquo;
+                  </h3>
+
+                  {/* Subtle background quote mark above and below text */}
+                  <Quote className="w-10 h-10 text-accent/10 mx-auto mb-4" />
+
+                  <div className="flex items-center justify-center space-x-4">
+                    <div className="w-14 h-14 rounded-full bg-surface border border-border flex items-center justify-center text-secondary font-bold text-lg">
+                      {testimonials[currentIndex].avatar}
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold text-primary text-lg">{testimonials[currentIndex].name}</div>
+                      <div className="text-secondary">{testimonials[currentIndex].role}</div>
+                    </div>
+                  </div>
+
+                  <Quote className="w-10 h-10 text-accent/10 mx-auto mt-4" />
                 </div>
-                <div className="text-left">
-                  <div className="font-semibold text-primary text-lg">{testimonials[currentIndex].name}</div>
-                  <div className="text-secondary">{testimonials[currentIndex].role}</div>
-                </div>
+
+                {/* Right navigation arrow aligned to card (pushed further out, lower opacity) */}
+                <button
+                  onClick={nextSlide}
+                  className="hidden sm:flex absolute right-[-4.5rem] top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border border-border items-center justify-center text-primary bg-white/80 hover:bg-surface hover:text-accent transition-all hover:scale-105 shadow-sm opacity-50 hover:opacity-80"
+                >
+                  <ChevronRight size={24} />
+                </button>
               </div>
             </motion.div>
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-center space-x-6 mt-16">
-          <button
-            onClick={prevSlide}
-            className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-primary hover:bg-surface hover:text-accent transition-all hover:scale-105"
-          >
-            <ChevronLeft size={24} />
-          </button>
-
+        {/* Slide indicators centered below card */}
+        <div className="flex items-center justify-center mt-10">
           <div className="flex space-x-2">
             {testimonials.map((_, i) => (
-              <button
+              <button 
                 key={i}
                 onClick={() => setCurrentIndex(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  i === currentIndex ? 'bg-accent w-8' : 'bg-gray-200 hover:bg-gray-300'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-accent w-8' : 'bg-gray-200 hover:bg-gray-300'}`}
               />
             ))}
           </div>
-
-          <button
-            onClick={nextSlide}
-            className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-primary hover:bg-surface hover:text-accent transition-all hover:scale-105"
-          >
-            <ChevronRight size={24} />
-          </button>
         </div>
       </div>
     </section>
@@ -574,7 +624,7 @@ export function Process() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="px-0 md:px-12 flex flex-col items-center md:items-start text-center md:text-left relative"
+              className="px-0 md:px-12 flex flex-col items-center md:items-start text-center md:text-left relative hover:-translate-y-1 transition-transform duration-300"
             >
               <span className="text-6xl md:text-8xl font-bold text-gray-200 mb-8 font-inter tracking-tighter">
                 {step.number}
@@ -629,11 +679,11 @@ export function Pricing() {
                 $4,999.90 <span className="text-2xl text-secondary font-medium tracking-normal">/ mo</span>
               </h3>
               <p className="text-secondary text-lg mb-12">
-                Pause or cancel anytime. Get your first design within 48 hours.
+                Pause or cancel anytime. First design delivered within 48 hours.
               </p>
             </div>
 
-            <button className="w-full py-5 bg-primary text-white text-lg font-medium rounded-2xl hover:bg-gray-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-300">
+            <button className="btn-hover w-full py-5 bg-primary text-white text-lg font-medium rounded-2xl hover:bg-gray-800 shadow-lg hover:shadow-xl">
               Get Started Now
             </button>
           </div>
@@ -696,7 +746,7 @@ export function FAQ() {
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className={`bg-white border rounded-2xl overflow-hidden transition-all duration-300 ${
+              className={`bg-white border rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-md ${
                 openIndex === i ? 'border-accent shadow-md' : 'border-border hover:border-gray-300'
               }`}
             >
@@ -766,19 +816,19 @@ export function Footer() {
 
           <div className="flex flex-col space-y-4">
             <h4 className="text-lg font-semibold text-primary mb-2">Navigation</h4>
-            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors w-fit">
+            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors duration-200 w-fit hover:underline underline-offset-2">
               Home
             </a>
-            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors w-fit">
+            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors duration-200 w-fit hover:underline underline-offset-2">
               Works
             </a>
-            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors w-fit">
+            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors duration-200 w-fit hover:underline underline-offset-2">
               About
             </a>
-            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors w-fit">
+            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors duration-200 w-fit hover:underline underline-offset-2">
               Pricing
             </a>
-            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors w-fit">
+            <a href="#" className="text-secondary hover:text-accent font-medium transition-colors duration-200 w-fit hover:underline underline-offset-2">
               Blog
             </a>
           </div>
@@ -831,10 +881,10 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Agency Hub. All rights reserved.
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-primary transition-colors">
+            <a href="#" className="hover:text-primary transition-colors duration-200 hover:underline underline-offset-2">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-primary transition-colors">
+            <a href="#" className="hover:text-primary transition-colors duration-200 hover:underline underline-offset-2">
               Terms of Service
             </a>
           </div>
